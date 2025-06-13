@@ -1,4 +1,4 @@
-on:
+on: 
   push:
     branches:
       - main
@@ -8,56 +8,43 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # optional but recommended to avoid infinite hangs
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.4.1
-        with:
-          node-version: 18.x
-
-      - name: Install ADF Utilities package
-        run: npm install
-        working-directory: ${{ github.workspace }}/build
-
-      - name: Validate ADF resources
-        run: npm run build validate ${{ github.workspace }}/ /subscriptions/d3f41627-fc6d-4d2f-b851-5f06fc474027/resourceGroups/covid-reporting-rg/providers/Microsoft.DataFactory/factories/covid-reporting-adf-name1
-        working-directory: ${{ github.workspace }}/build
-
-      - name: Export ARM Template
-        run: npm run build export ${{ github.workspace }}/ /subscriptions/d3f41627-fc6d-4d2f-b851-5f06fc474027/resourceGroups/covid-reporting-rg/providers/Microsoft.DataFactory/factories/covid-reporting-adf-name1 ExportedArmTemplate
-        working-directory: ${{ github.workspace }}/build
-
-      - name: Upload ARM Template Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ExportedArmTemplate
-          path: ${{ github.workspace }}/build/ExportedArmTemplate
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download ARM Template Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ExportedArmTemplate
-
-      - name: Azure Login via Az Module
-        uses: azure/login@v1
+      - name: Login to Azure via OIDC
+        uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: d3f41627-fc6d-4d2f-b851-5f06fc474027
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: Deploy ARM Template to Test ADF
+      - name: Run Azure CLI script
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            echo "Current Azure account:"
+            az account show
+
+      - name: Run Azure PowerShell script
+        uses: azure/powershell@v2
+        with:
+          azPSVersion: "latest"
+          inlineScript: |
+            Write-Output "Current Az Context:"
+            Get-AzContext
+
+      - name: Deploy ADF via ARM Template
         uses: Azure/data-factory-deploy-action@v1.2.0
         with:
-          resourceGroupName: test-cicd-rg
-          dataFactoryName: test-cicd-adf1
+          resourceGroupName: test-cicd-rg  # ✅ your target RG
+          dataFactoryName: test-cicd-adf1  # ✅ your target ADF name
           armTemplateFile: ExportedArmTemplate/ARMTemplateForFactory.json
           armTemplateParametersFile: ExportedArmTemplate/ARMTemplateParametersForFactory.json
-          # You can optionally add: additionalParameters: factoryName=test-cicd-adf1
+          skipAzModuleInstallation: true  # ✅ prevent long install time
