@@ -1,4 +1,4 @@
-name: ADF Dev → Test → Prod CI/CD
+name: ADF CI/CD Pipeline
 
 on:
   push:
@@ -28,11 +28,11 @@ jobs:
         working-directory: ${{ github.workspace }}/build
 
       - name: Validate ADF Code
-        run: npm run build validate ${{ github.workspace }}/ /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/dev-cicd-rg/providers/Microsoft.DataFactory/factories/dev-cicd-adf1
+        run: npm run build validate ${{ github.workspace }}/ /subscriptions/d3f41627-fc6d-4d2f-b851-5f06fc474027/resourceGroups/covid-reporting-rg/providers/Microsoft.DataFactory/factories/covid-reporting-adf-name1
         working-directory: ${{ github.workspace }}/build
 
       - name: Export ARM Template
-        run: npm run build export ${{ github.workspace }}/ /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/dev-cicd-rg/providers/Microsoft.DataFactory/factories/dev-cicd-adf1 ExportedArmTemplate
+        run: npm run build export ${{ github.workspace }}/ /subscriptions/d3f41627-fc6d-4d2f-b851-5f06fc474027/resourceGroups/covid-reporting-rg/providers/Microsoft.DataFactory/factories/covid-reporting-adf-name1 ExportedArmTemplate
         working-directory: ${{ github.workspace }}/build
 
       - name: Upload ARM Template Artifact
@@ -41,19 +41,19 @@ jobs:
           name: ExportedArmTemplate
           path: ${{ github.workspace }}/build/ExportedArmTemplate
 
-  test-deploy:
+  deploy-test:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 50
 
     steps:
-      - name: Download ARM Template
+      - name: Download ARM Template Artifact
         uses: actions/download-artifact@v4
         with:
           name: ExportedArmTemplate
           path: ExportedArmTemplate
 
-      - name: Azure Login (OIDC)
+      - name: Azure Login via OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -61,34 +61,32 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: Install Required Az Modules (Optimized)
+      - name: Install Required Az Modules
         shell: pwsh
         run: |
-          Install-Module -Name Az.Accounts -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
-          Install-Module -Name Az.DataFactory -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+          Install-Module -Name Az.Resources -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 
-      - name: Deploy to Test ADF
+      - name: Deploy ADF to TEST
         uses: Azure/data-factory-deploy-action@v1.2.0
         with:
           resourceGroupName: test-cicd-rg
           dataFactoryName: test-cicd-adf1
           armTemplateFile: ExportedArmTemplate/ARMTemplateForFactory.json
           armTemplateParametersFile: ExportedArmTemplate/ARMTemplateParametersForFactory.json
-          skipAzModuleInstallation: true
 
-  prod-deploy:
-    needs: test-deploy
+  deploy-prod:
+    needs: deploy-test
     runs-on: ubuntu-latest
     timeout-minutes: 50
 
     steps:
-      - name: Download ARM Template
+      - name: Download ARM Template Artifact
         uses: actions/download-artifact@v4
         with:
           name: ExportedArmTemplate
           path: ExportedArmTemplate
 
-      - name: Azure Login (OIDC)
+      - name: Azure Login via OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -96,17 +94,15 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
-      - name: Install Required Az Modules (Optimized)
+      - name: Install Required Az Modules
         shell: pwsh
         run: |
-          Install-Module -Name Az.Accounts -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
-          Install-Module -Name Az.DataFactory -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+          Install-Module -Name Az.Resources -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 
-      - name: Deploy to Prod ADF
+      - name: Deploy ADF to PROD
         uses: Azure/data-factory-deploy-action@v1.2.0
         with:
           resourceGroupName: prod-cicd-rg1
           dataFactoryName: prod-cicd-adf1
           armTemplateFile: ExportedArmTemplate/ARMTemplateForFactory.json
           armTemplateParametersFile: ExportedArmTemplate/ARMTemplateParametersForFactory.json
-          skipAzModuleInstallation: true
