@@ -71,4 +71,4 @@ jobs:
           dataFactoryName: test-cicd-adf1
           armTemplateFile: ExportedArmTemplate/ARMTemplateForFactory.json
           armTemplateParametersFile: ExportedArmTemplate/ARMTemplateParametersForFactory.json
-          skipAzModuleInstallation: true
+          # skipAzModuleInstallation: true
