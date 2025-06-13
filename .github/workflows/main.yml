@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
@@ -50,13 +50,19 @@ jobs:
           name: ExportedArmTemplate
           path: ExportedArmTemplate
 
-      - name: Azure Login via OIDC
+      - name: Login to Azure using OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
+
+      - name: Install Required Az Modules (Optimized)
+        shell: pwsh
+        run: |
+          Install-Module -Name Az.Accounts -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+          Install-Module -Name Az.DataFactory -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 
       - name: Deploy ADF via ARM Template
         uses: Azure/data-factory-deploy-action@v1.2.0
@@ -65,3 +71,4 @@ jobs:
           dataFactoryName: test-cicd-adf1
           armTemplateFile: ExportedArmTemplate/ARMTemplateForFactory.json
           armTemplateParametersFile: ExportedArmTemplate/ARMTemplateParametersForFactory.json
+          skipAzModuleInstallation: true
