@@ -1,0 +1,33 @@
+{
+	"name": "pl_process_testing_data",
+	"properties": {
+		"activities": [
+			{
+				"name": "process_testing_data",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "07.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/siddusutar34@gmail.com/covid/Trans/transform testing data"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_db_covid_cluster",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "processed"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-06-11T17:12:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

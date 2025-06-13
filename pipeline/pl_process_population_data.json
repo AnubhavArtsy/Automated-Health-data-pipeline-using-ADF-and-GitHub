@@ -1,0 +1,34 @@
+{
+	"name": "pl_process_population_data",
+	"properties": {
+		"activities": [
+			{
+				"name": "trans Population data",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/siddusutar34@gmail.com/covid/Trans/transform_population_data (2)"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_db_covid_cluster",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"concurrency": 1,
+		"folder": {
+			"name": "processed"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-06-11T17:12:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
