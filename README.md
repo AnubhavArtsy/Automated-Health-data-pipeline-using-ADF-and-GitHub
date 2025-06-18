@@ -6,7 +6,7 @@ This project demonstrates a real-time, production-ready **Data Engineering Pipel
 
 ## 🔧 Solution Architecture
 
-![Solution Architecture](https://raw.githubusercontent.com/AnmolHajnale/major-Project-cicd/main/9193b510-df66-4f08-b941-5097746681d8.png)
+![Solution Architecture](https://github.com/AnmolHajnale/major-Project-cicd/blob/main/Architecture.png)
 
 ---
 
