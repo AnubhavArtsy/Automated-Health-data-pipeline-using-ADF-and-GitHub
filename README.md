@@ -1,52 +1,51 @@
-# 🌐 Automated Health Data Pipeline with ADF and CI/CD
+# 🌐 Automated Health Data Pipeline with CI/CD
 
-This project demonstrates an end-to-end real-time data pipeline using **Azure Data Factory (ADF)**, **Azure Data Lake Storage Gen2**, **Azure SQL Database**, **Power BI**, and **CI/CD automation** using **GitHub Actions**.
+This project demonstrates a real-time, production-ready **Data Engineering Pipeline** using Azure services and CI/CD automation through GitHub Actions. It integrates ingestion, transformation, analysis, visualization, and automated deployment across environments.
 
 ---
 
 ## 🔧 Solution Architecture
 
-![Solution Architecture](https://raw.githubusercontent.com/AnmolHajnale/major-Project-cicd/main/Screenshot%202025-01-22%20052953.png)
+![Solution Architecture](https://raw.githubusercontent.com/AnmolHajnale/major-Project-cicd/main/9193b510-df66-4f08-b941-5097746681d8.png)
 
-### 🔹 Components:
-- **Data Sources**: 
-  - ECDC COVID-19 Data (via HTTP connector)
-  - Population data (Azure Blob Storage)
-- **Ingestion & Transformation**:
-  - Azure Data Factory pipelines to extract, load, and transform data
-  - Stored in Azure Data Lake Gen2
-- **Data Analysis & Storage**:
-  - Data is transformed and moved to Azure SQL Database
-- **Publishing & Reporting**:
-  - Data is published using ADF pipelines and visualized in Power BI
-- **ML Integration** (optional):
-  - Data available for ML model training/serving via Azure Data Lake Gen2
+---
+
+## 📌 Key Features
+
+- Ingests **COVID-19 data (via HTTP)** and **Population Data (via Blob Storage)**
+- Stores data in **Azure Data Lake Gen2** (raw + processed layers)
+- Transforms and analyzes using **Azure Data Factory** and **Azure Databricks**
+- Loads data into **Azure SQL Database** for reporting
+- Visualizes insights using **Power BI**
+- ML-ready data also stored for **ML model access**
+- Fully automated CI/CD pipeline using **GitHub Actions**
+- Implements **Scheduled + Tumbling Window triggers**
 
 ---
 
 ## 🔄 CI/CD with GitHub Actions
 
-![CI/CD Architecture](https://raw.githubusercontent.com/AnmolHajnale/major-Project-cicd/main/Screenshot%202025-01-22%20053157.png)
-
-- **ADF Dev**: You develop and test pipelines in the Dev environment.
-- **GitHub**: All ADF code (pipelines, datasets, triggers, linked services) is stored in Git and versioned.
-- **CI/CD Workflow**:
-  - On commit: A GitHub Action builds the ARM templates.
-  - Artifacts are packaged.
-  - GitHub Actions then deploys to **ADF Test**, and on approval to **ADF Prod**.
+- Code is stored in GitHub
+- On commit, GitHub Actions:
+  - Builds ARM templates
+  - Packages artifacts
+  - Deploys to **ADF Test** and **ADF Prod**
+- Pure GitHub-based CI/CD (no Azure DevOps)
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Tool/Service              | Purpose                          |
-|---------------------------|----------------------------------|
-| Azure Data Factory        | ETL pipelines                    |
-| Azure SQL Database        | Data storage & analytics         |
-| Azure Data Lake Gen2      | Raw & processed data storage     |
-| Power BI                  | Dashboards and visual analytics  |
-| GitHub Actions            | CI/CD automation                 |
-| ARM Templates             | Infrastructure as Code (IaC)     |
+| Tool/Service              | Purpose                                   |
+|---------------------------|--------------------------------------------|
+| Azure Data Factory        | ETL pipelines and no-code transformations |
+| Azure Databricks          | Scalable data transformation & analytics  |
+| Azure SQL Database        | Data storage & analytics                  |
+| Azure Data Lake Gen2      | Raw & processed data storage              |
+| Power BI                  | Dashboards and visual analytics           |
+| GitHub + GitHub Actions   | Version control and CI/CD automation      |
+| ARM Templates             | Infrastructure as Code (IaC)              |
+| ADF Triggers              | Scheduled and tumbling window automation  |
 
 ---
 
