@@ -1,6 +1,6 @@
 # 🌐 Automated Health Data Pipeline with CI/CD
 
-This project demonstrates a real-time, production-ready **Data Engineering Pipeline** using Azure services and CI/CD automation through GitHub Actions. It integrates ingestion, transformation, analysis, visualization, and automated deployment across environments.
+This project demonstrates a real-time, production-ready **Data Engineering Pipeline** using Azure services and CI/CD automation through GitHub Actions. It integrates ingestion, transformation, analysis, visualization, and automated deployment across environments
 
 ---
 
